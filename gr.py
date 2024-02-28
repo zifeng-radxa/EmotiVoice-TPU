@@ -235,7 +235,7 @@ def convert_only(src_wav, tgt_wav, agree):
 
 
 description = """
-# 😊😮😭Emoti Open Voice with AirBox💬
+# 😊😮😭Emoti Open Voice with BM1684M💬
 """
 
 with gr.Blocks(analytics_enabled=False) as demo:
@@ -247,10 +247,10 @@ with gr.Blocks(analytics_enabled=False) as demo:
     with gr.Tab('TTS mode'):
         with gr.Row():
             with gr.Column():
-                speaker_gr = gr.Dropdown(choices=speakers, label="Speaker ID (说话人)")
-                emotion_gr = gr.Textbox(label="情感 (开心/悲伤)")
-                content_gr = gr.Textbox(label="需要合成的文本")
-                tts_button = gr.Button("生成", elem_id="send-btn", visible=True)
+                speaker_gr = gr.Dropdown(choices=speakers, value=speakers[0], label="Speaker ID")
+                emotion_gr = gr.Textbox(label="Emotion (happy/sad/...)")
+                content_gr = gr.Textbox(label="Content", lines=3)
+                tts_button = gr.Button("Generate", elem_id="send-btn", visible=True)
             with gr.Column():
                 synthesize = gr.Audio(type="filepath")
                 tts_button.click(tts_only, [content_gr, speaker_gr, emotion_gr], outputs=[synthesize])
@@ -258,18 +258,19 @@ with gr.Blocks(analytics_enabled=False) as demo:
     with gr.Tab('TTS + Conversion mode'):
         with gr.Row():
             with gr.Column():
-                speaker_gr = gr.Dropdown(choices=speakers, value=speakers[0], label="原始说话人ID")
+                speaker_gr = gr.Dropdown(choices=speakers, value=speakers[0], label="Speaker ID")
                 content_gr = gr.Textbox(
-                    label="文本内容",
+                    label="Content",
                     info="One or two sentences at a time is better. Up to 200 text characters.",
                     value="You got a dream, you gotta protect it. People can't do something themselves, they wanna tell you you can't do it. If you want something, go get it. Period.",
+                    lines=3
                 )
-                emotion_gr = gr.Textbox(label="语调情感 (开心/悲伤/愤怒/惊讶/冷酷...)", value="开心")
+                emotion_gr = gr.Textbox(label="Emotion (happy/sad/angry/surprise/cool...)", value="happy")
                 ref_gr = gr.Audio(
-                    label="目标音色",
+                    label="target tone color",
                     # info="点击上传目标音色的音频文件",
                     type="filepath",
-                    sources='upload'
+                    sources=['upload', 'microphone'],
                 )
                 tos_gr = gr.Checkbox(
                     label="Agree",
@@ -277,7 +278,7 @@ with gr.Blocks(analytics_enabled=False) as demo:
                     info="I agree to the terms of the cc-by-nc-4.0 license-: https://github.com/myshell-ai/OpenVoice/blob/main/LICENSE",
                 )
 
-                tts_button = gr.Button("生成", elem_id="send-btn", visible=True)
+                tts_button = gr.Button("Generate", elem_id="send-btn", visible=True)
 
             with gr.Column():
                 out_text_gr = gr.Text(label="Info")
@@ -297,13 +298,14 @@ with gr.Blocks(analytics_enabled=False) as demo:
                     label="Reference Audio",
                     # info="Click on the ✎ button to upload your own target speaker audio",
                     type="filepath",
+                    sources=['upload', 'microphone']
                 )
                 cvt_tos_gr = gr.Checkbox(
                     label="Agree",
                     value=True,
                     info="I agree to the terms of the cc-by-nc-4.0 license-: https://github.com/myshell-ai/OpenVoice/blob/main/LICENSE",
                 )
-                cvt_button = gr.Button("转换", elem_id="send-btn", visible=True)
+                cvt_button = gr.Button("Generate", elem_id="send-btn", visible=True)
             with gr.Column():
                 out_text_gr = gr.Text(label="Info")
                 cvt_audio_gr = gr.Audio(label="Synthesised Audio", autoplay=True)
